@@ -1,12 +1,13 @@
 # DashboardUsingExcel
 An interactive sales dashboard built in Microsoft Excel, covering one year of transaction-level sales data (Jan 2021 – Jan 2022) across 4 regions, 6 product categories, and 6 salespeople. Built using PivotTables, PivotCharts, and slicers for dynamic, self-service reporting.
 
-# Key insights
-##Overall performance
+# 📊 Key insights
+## Overall performance
 
 
 * Total revenue: ₹17,82,570 across 366 orders, averaging ₹4,870 per order, for 1,607 units sold.
 * Revenue dipped sharply in the final period (Q1 2022 shows only ₹7,500), suggesting the dataset's most recent month is a partial/incomplete cut rather than a real slowdown — worth flagging if presenting this live.
+<img width="1322" height="551" alt="dashboard" src="https://github.com/user-attachments/assets/ff755687-91d0-4a9e-928b-28854da5aa48" />
 
 
 ## Regional performance
@@ -16,6 +17,8 @@ An interactive sales dashboard built in Microsoft Excel, covering one year of tr
 * West follows at ₹5,07,330 (89 orders), then South at ₹3,35,480, with North trailing at ₹2,03,680 — the smallest and least active territory.
 * East's lead is driven mostly by Printers (₹3,61,200) and Scanners (₹1,55,100) — both far ahead of the other regions in these categories.
 
+<img width="1546" height="640" alt="image" src="https://github.com/user-attachments/assets/f02ce786-d0f0-46bf-af31-a55db33171f9" />
+
 
 ## Product performance
 
@@ -24,6 +27,8 @@ An interactive sales dashboard built in Microsoft Excel, covering one year of tr
 * Scanners (₹3,52,200) and Monitors (₹3,39,000) are the next strongest categories.
 * Mouse, Speaker, and Keyboard are high-frequency but low-value items (avg order values of ₹207–₹469) — good for order count, minimal revenue impact.
 
+<img width="1320" height="550" alt="image" src="https://github.com/user-attachments/assets/18738fc4-1bae-4e39-ac10-9a9f1df4ca56" />
+
 
 ## Sales team performance
 
@@ -31,6 +36,8 @@ An interactive sales dashboard built in Microsoft Excel, covering one year of tr
 * Siddhu is the top performer: ₹5,51,960 across 96 orders, with strong contributions in both East (₹2,23,620) and West (₹1,34,370) — the only salesperson active across three regions.
 * Rohit Das (₹3,94,410) and Ajit Kumar (₹3,86,030) are close behind, but each is concentrated in a single core region (West and East respectively).
 * Amit, Ramesh, and Chandu each generated under ₹1,85,000, with notably fewer orders (34 each) — there's a clear gap between the top 3 and bottom 3 performers.
+
+<img width="1324" height="553" alt="image" src="https://github.com/user-attachments/assets/147d8ea2-c36c-40d4-99f6-b5b506fc5fe6" />
 
 
 ## Seasonality
