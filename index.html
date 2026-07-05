@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Performance Dashboard 2021 — Tannu Kumari</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0f1117;
+  --surface:  #181c27;
+  --card:     #1e2333;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --txt:      #e8eaf0;
+  --txt2:     #8891a8;
+  --txt3:     #5a6378;
+  --blue:     #4f8ef7;
+  --teal:     #34c8b0;
+  --amber:    #f5a623;
+  --rose:     #f26b70;
+  --purple:   #a78bfa;
+  --green:    #4ade80;
+  --bluedim:  rgba(79,142,247,0.12);
+  --tealdim:  rgba(52,200,176,0.12);
+  --amberdim: rgba(245,166,35,0.12);
+  --rosedim:  rgba(242,107,112,0.12);
+}
+
+html { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--txt); }
+body { min-height: 100vh; }
+.mono { font-family: 'DM Mono', monospace; }
+
+/* ── HEADER ─────────────────────────────── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky; top: 0; z-index: 100;
+}
+.hdr-left { display: flex; align-items: center; gap: 14px; }
+.logo-badge {
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; color: #fff;
+}
+.hdr-title { font-weight: 600; font-size: 0.95rem; }
+.hdr-sub { font-size: 0.78rem; color: var(--txt2); margin-top: 1px; }
+.hdr-right { display: flex; align-items: center; gap: 12px; }
+.badge {
+  font-size: 0.72rem; font-family: 'DM Mono', monospace;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--border2); color: var(--txt2);
+}
+.badge.live { border-color: var(--teal); color: var(--teal); }
+.badge.live::before { content: "●  "; font-size: 0.6rem; }
+
+/* ── FILTER BAR ─────────────────────────── */
+.filterbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.filter-label { font-size: 0.75rem; color: var(--txt3); text-transform: uppercase; letter-spacing: .06em; margin-right: 4px; }
+.filter-chip {
+  font-size: 0.78rem; cursor: pointer;
+  padding: 5px 14px; border-radius: 20px;
+  border: 1px solid var(--border2); color: var(--txt2);
+  background: transparent; transition: all .2s; user-select: none;
+}
+.filter-chip.active, .filter-chip:hover {
+  background: var(--bluedim); border-color: var(--blue); color: var(--blue);
+}
+.filter-sep { width: 1px; height: 22px; background: var(--border); }
+
+/* ── LAYOUT ─────────────────────────────── */
+.dash { padding: 24px 28px; display: grid; gap: 20px; }
+
+/* Row 1: KPIs */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.4); }
+.kpi-card::before {
+  content: ""; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi-card.blue::before  { background: linear-gradient(90deg, var(--blue), transparent); }
+.kpi-card.teal::before  { background: linear-gradient(90deg, var(--teal), transparent); }
+.kpi-card.amber::before { background: linear-gradient(90deg, var(--amber), transparent); }
+.kpi-card.rose::before  { background: linear-gradient(90deg, var(--rose), transparent); }
+
+.kpi-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 16px;
+}
+.kpi-card.blue  .kpi-icon { background: var(--bluedim);  }
+.kpi-card.teal  .kpi-icon { background: var(--tealdim);  }
+.kpi-card.amber .kpi-icon { background: var(--amberdim); }
+.kpi-card.rose  .kpi-icon { background: var(--rosedim);  }
+.kpi-label { font-size: 0.76rem; color: var(--txt2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.kpi-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.85rem; font-weight: 500; letter-spacing: -.02em;
+  line-height: 1;
+}
+.kpi-card.blue  .kpi-val { color: var(--blue);  }
+.kpi-card.teal  .kpi-val { color: var(--teal);  }
+.kpi-card.amber .kpi-val { color: var(--amber); }
+.kpi-card.rose  .kpi-val { color: var(--rose);  }
+.kpi-sub { font-size: 0.74rem; color: var(--txt3); margin-top: 6px; }
+
+/* Row 2: Revenue trend (wide) + Quarterly (narrow) */
+.row2 { display: grid; grid-template-columns: 2.4fr 1fr; gap: 16px; }
+
+/* Row 3: Region donut + Items bar + Salesman bar */
+.row3 { display: grid; grid-template-columns: 1fr 1.4fr 1.4fr; gap: 16px; }
+
+/* Row 4: Heatmap + Top insights */
+.row4 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; }
+
+/* ── CHART CARD ─────────────────────────── */
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: flex; flex-direction: column;
+}
+.card-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 20px;
+}
+.card-title { font-size: 0.88rem; font-weight: 600; }
+.card-sub { font-size: 0.72rem; color: var(--txt3); margin-top: 3px; }
+.card-tag {
+  font-size: 0.68rem; font-family: 'DM Mono', monospace;
+  padding: 3px 9px; border-radius: 10px;
+  border: 1px solid var(--border2); color: var(--txt3);
+}
+
+/* ── SVG CANVAS ─────────────────────────── */
+svg { overflow: visible; }
+.axis-line { stroke: var(--border2); }
+.axis-label { fill: var(--txt3); font-size: 10px; font-family: 'DM Mono', monospace; }
+.grid-line { stroke: var(--border); stroke-dasharray: 3 4; }
+
+/* ── TOOLTIP ────────────────────────────── */
+.tooltip {
+  position: fixed;
+  background: #252a3a;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s;
+  z-index: 999;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+.tooltip.show { opacity: 1; }
+.tt-label { color: var(--txt2); font-size: 0.72rem; margin-bottom: 4px; }
+.tt-val { font-family: 'DM Mono', monospace; font-size: 1rem; font-weight: 500; color: var(--txt); }
+
+/* ── HEATMAP ─────────────────────────────── */
+.heat-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.heat-table th { font-size: 0.68rem; color: var(--txt3); text-transform: uppercase; letter-spacing: .05em; padding: 0 10px 10px; text-align: center; font-weight: 500; }
+.heat-table th.row-h { text-align: left; padding-left: 0; }
+.heat-table td { padding: 8px 10px; border-radius: 5px; text-align: center; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+.heat-table td.region { color: var(--txt2); text-align: left; padding-left: 0; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; }
+
+/* ── INSIGHT LIST ────────────────────────── */
+.insight-list { list-style: none; display: flex; flex-direction: column; gap: 13px; }
+.insight-item { display: flex; gap: 13px; align-items: flex-start; }
+.ins-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.ins-text { font-size: 0.84rem; color: var(--txt2); line-height: 1.55; }
+.ins-text strong { color: var(--txt); font-weight: 600; }
+
+/* ── FOOTER ─────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 0.75rem;
+  color: var(--txt3);
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+footer a { color: var(--blue); text-decoration: none; }
+
+/* ── ANIMATIONS ─────────────────────────── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.kpi-card  { animation: fadeUp .6s ease both; }
+.kpi-card:nth-child(1){ animation-delay:.05s; }
+.kpi-card:nth-child(2){ animation-delay:.12s; }
+.kpi-card:nth-child(3){ animation-delay:.19s; }
+.kpi-card:nth-child(4){ animation-delay:.26s; }
+.chart-card { animation: fadeUp .7s ease both; animation-delay: .3s; }
+
+@keyframes countUp { from { opacity:0; } to { opacity:1; } }
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media(max-width:900px){
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+  .row2, .row3, .row4 { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="tooltip" id="tooltip">
+  <div class="tt-label" id="tt-label"></div>
+  <div class="tt-val"   id="tt-val"></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr-left">
+    <div class="logo-badge">📊</div>
+    <div>
+      <div class="hdr-title">Sales Performance Dashboard</div>
+      <div class="hdr-sub">Jan 2021 – Dec 2021 &nbsp;·&nbsp; 4 Regions &nbsp;·&nbsp; 6 Products &nbsp;·&nbsp; 6 Salespeople</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="badge">FY 2021</span>
+    <span class="badge live">Live Data</span>
+    <span class="badge mono">366 records</span>
+  </div>
+</header>
+
+<!-- FILTER BAR -->
+<div class="filterbar">
+  <span class="filter-label">Region</span>
+  <span class="filter-chip active" data-filter="region" data-val="All">All</span>
+  <span class="filter-chip" data-filter="region" data-val="East">East</span>
+  <span class="filter-chip" data-filter="region" data-val="West">West</span>
+  <span class="filter-chip" data-filter="region" data-val="South">South</span>
+  <span class="filter-chip" data-filter="region" data-val="North">North</span>
+  <div class="filter-sep"></div>
+  <span class="filter-label">Product</span>
+  <span class="filter-chip active" data-filter="product" data-val="All">All</span>
+  <span class="filter-chip" data-filter="product" data-val="Printer">Printer</span>
+  <span class="filter-chip" data-filter="product" data-val="Scanner">Scanner</span>
+  <span class="filter-chip" data-filter="product" data-val="Monitor">Monitor</span>
+  <span class="filter-chip" data-filter="product" data-val="Mouse">Mouse</span>
+  <span class="filter-chip" data-filter="product" data-val="Speaker">Speaker</span>
+  <span class="filter-chip" data-filter="product" data-val="Keyboard">Keyboard</span>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dash">
+
+  <!-- ROW 1: KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-label">Total Revenue</div>
+      <div class="kpi-val" id="kpi-rev">₹17.83L</div>
+      <div class="kpi-sub" id="kpi-rev-sub">across 366 orders</div>
+    </div>
+    <div class="kpi-card teal">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-label">Total Orders</div>
+      <div class="kpi-val" id="kpi-orders">366</div>
+      <div class="kpi-sub" id="kpi-orders-sub">avg ₹4,870 per order</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-icon">🛒</div>
+      <div class="kpi-label">Units Sold</div>
+      <div class="kpi-val" id="kpi-qty">1,607</div>
+      <div class="kpi-sub" id="kpi-qty-sub">avg 4.4 units/order</div>
+    </div>
+    <div class="kpi-card rose">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-label">Top Product</div>
+      <div class="kpi-val" style="font-size:1.3rem;" id="kpi-top">Printer</div>
+      <div class="kpi-sub" id="kpi-top-sub">52% of total revenue</div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Monthly trend + Quarterly bars -->
+  <div class="row2">
+    <!-- Monthly Revenue Trend -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Monthly Revenue Trend</div>
+          <div class="card-sub">Jan – Dec 2021 · Area chart</div>
+        </div>
+        <span class="card-tag">₹17.83L total</span>
+      </div>
+      <svg id="line-svg" width="100%" height="220" viewBox="0 0 700 220" preserveAspectRatio="none"></svg>
+    </div>
+
+    <!-- Quarterly Comparison -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Quarterly Revenue</div>
+          <div class="card-sub">Q3 was peak quarter</div>
+        </div>
+      </div>
+      <svg id="qtr-svg" width="100%" height="220" viewBox="0 0 260 220" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <!-- ROW 3: Region Donut + Items bar + Salesman bar -->
+  <div class="row3">
+
+    <!-- Region Donut -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Revenue by Region</div>
+          <div class="card-sub">East dominates at 41%</div>
+        </div>
+      </div>
+      <svg id="donut-svg" width="100%" height="220" viewBox="0 0 220 220"></svg>
+      <div id="donut-legend" style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:8px;"></div>
+    </div>
+
+    <!-- Product Revenue Bar -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Revenue by Product</div>
+          <div class="card-sub">Printer leads by a wide margin</div>
+        </div>
+      </div>
+      <svg id="item-svg" width="100%" height="220" viewBox="0 0 320 220" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+    <!-- Salesman Bar -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Salesperson Performance</div>
+          <div class="card-sub">Siddhu 40% ahead of next rep</div>
+        </div>
+      </div>
+      <svg id="sal-svg" width="100%" height="220" viewBox="0 0 320 220" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+
+  </div>
+
+  <!-- ROW 4: Heatmap + Insights -->
+  <div class="row4">
+
+    <!-- Region × Product Heatmap -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Revenue Heatmap — Region × Product</div>
+          <div class="card-sub">Darker = higher revenue</div>
+        </div>
+        <span class="card-tag">₹ values</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="heat-table" id="heat-table"></table>
+      </div>
+    </div>
+
+    <!-- Key Insights -->
+    <div class="chart-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Key Insights</div>
+          <div class="card-sub">Analyst summary</div>
+        </div>
+      </div>
+      <ul class="insight-list">
+        <li class="insight-item">
+          <span class="ins-dot" style="background:var(--blue)"></span>
+          <span class="ins-text"><strong>East region</strong> generates ₹7.36L (41% of revenue) — more than double North, driven by Printers & Scanners.</span>
+        </li>
+        <li class="insight-item">
+          <span class="ins-dot" style="background:var(--teal)"></span>
+          <span class="ins-text"><strong>Printers alone</strong> account for ₹9.34L — 52% of all revenue despite being only 20% of order volume. High-value item.</span>
+        </li>
+        <li class="insight-item">
+          <span class="ins-dot" style="background:var(--amber)"></span>
+          <span class="ins-text"><strong>Siddhu</strong> leads the sales team at ₹5.52L with 96 orders — the only rep active across 3 regions, worth studying as a playbook.</span>
+        </li>
+        <li class="insight-item">
+          <span class="ins-dot" style="background:var(--purple)"></span>
+          <span class="ins-text"><strong>Q3 (Jul–Sep)</strong> was the strongest quarter at ₹5.10L. <strong>February & September</strong> were the two top individual months.</span>
+        </li>
+        <li class="insight-item">
+          <span class="ins-dot" style="background:var(--rose)"></span>
+          <span class="ins-text"><strong>Mouse, Keyboard, Speaker</strong> have high order frequency but low revenue impact — candidates for bundling with high-margin products.</span>
+        </li>
+        <li class="insight-item">
+          <span class="ins-dot" style="background:var(--green)"></span>
+          <span class="ins-text"><strong>North region</strong> underperforms in Printers (only ₹96,600 vs East's ₹3.61L) — the single highest-leverage growth opportunity.</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  Built by <a href="#">Tannu Kumari</a> &nbsp;·&nbsp; Sales Dataset FY 2021 &nbsp;·&nbsp; Excel → Interactive HTML Dashboard &nbsp;·&nbsp;
+  <a href="https://github.com/tannu0709/DashboardUsingExcel" target="_blank">View on GitHub ↗</a>
+</footer>
+
+<script>
+/* ─── DATA ─────────────────────────────────── */
+const ALL_DATA = {
+  monthly: [
+    {m:"Jan",v:135630},{m:"Feb",v:224470},{m:"Mar",v:86100},
+    {m:"Apr",v:153530},{m:"May",v:110160},{m:"Jun",v:118530},
+    {m:"Jul",v:130100},{m:"Aug",v:156300},{m:"Sep",v:223770},
+    {m:"Oct",v:197350},{m:"Nov",v:31520},{m:"Dec",v:207610}
+  ],
+  quarterly: [
+    {q:"Q1 2021",v:446200},{q:"Q2 2021",v:382220},
+    {q:"Q3 2021",v:510170},{q:"Q4 2021",v:436480}
+  ],
+  region: [
+    {r:"East",v:736080},{r:"West",v:507330},{r:"South",v:335480},{r:"North",v:203680}
+  ],
+  items: [
+    {i:"Printer",v:934500,qty:445},{i:"Scanner",v:352200,qty:242},
+    {i:"Monitor",v:339000,qty:251},{i:"Mouse",v:66150,qty:319},
+    {i:"Speaker",v:65400,qty:218},{i:"Keyboard",v:25320,qty:132}
+  ],
+  salesman: [
+    {s:"Siddhu",v:551960,o:96},{s:"Rohit Das",v:394410,o:84},
+    {s:"Ajit Kumar",v:386030,o:84},{s:"Amit",v:184690,o:34},
+    {s:"Ramesh",v:139880,o:34},{s:"Chandu",v:125600,o:34}
+  ],
+  heatmap: {
+    regions:["East","West","South","North"],
+    products:["Printer","Scanner","Monitor","Mouse","Speaker","Keyboard"],
+    values:{
+      East:   {Printer:361200, Scanner:155100, Monitor:138300, Mouse:34950, Speaker:33600, Keyboard:12930},
+      West:   {Printer:262500, Scanner:108900, Monitor:103200, Mouse:14940, Speaker:11100, Keyboard:6690},
+      South:  {Printer:214200, Scanner:65700,  Monitor:31200,  Mouse:7080,  Speaker:13500, Keyboard:3800},
+      North:  {Printer:96600,  Scanner:22500,  Monitor:66300,  Mouse:9180,  Speaker:7200,  Keyboard:1900}
+    }
+  }
+};
+
+const COLORS = {
+  region:  ["#4f8ef7","#34c8b0","#f5a623","#a78bfa"],
+  items:   ["#4f8ef7","#34c8b0","#f5a623","#f26b70","#a78bfa","#4ade80"],
+  salesman:["#4f8ef7","#34c8b0","#f5a623","#f26b70","#a78bfa","#4ade80"]
+};
+
+/* ─── TOOLTIP ──────────────────────────────── */
+const tooltip = document.getElementById("tooltip");
+const ttLabel = document.getElementById("tt-label");
+const ttVal   = document.getElementById("tt-val");
+function showTT(e, label, val) {
+  ttLabel.textContent = label;
+  ttVal.textContent   = val;
+  tooltip.classList.add("show");
+  moveTT(e);
+}
+function moveTT(e) {
+  tooltip.style.left = (e.clientX + 14) + "px";
+  tooltip.style.top  = (e.clientY - 36) + "px";
+}
+function hideTT() { tooltip.classList.remove("show"); }
+document.addEventListener("mousemove", moveTT);
+
+/* ─── UTILS ─────────────────────────────────── */
+function fmt(v) {
+  if (v >= 100000) return "₹" + (v/100000).toFixed(2) + "L";
+  if (v >= 1000)   return "₹" + (v/1000).toFixed(1) + "K";
+  return "₹" + v;
+}
+function fmt2(v) { return "₹" + v.toLocaleString("en-IN"); }
+
+/* ─── MONTHLY LINE CHART ──────────────────── */
+function drawLine(data) {
+  const svg = document.getElementById("line-svg");
+  svg.innerHTML = "";
+  const W=700, H=220, pad={t:20,r:20,b:36,l:56};
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
+  const vals=data.map(d=>d.v);
+  const maxV=Math.max(...vals)*1.1, minV=0;
+  const x=i=>pad.l+i*(iw/(data.length-1));
+  const y=v=>pad.t+ih-(((v-minV)/(maxV-minV))*ih);
+
+  // grid lines
+  [0,0.25,0.5,0.75,1].forEach(p=>{
+    const yy=pad.t+ih*(1-p);
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",pad.l); line.setAttribute("x2",W-pad.r);
+    line.setAttribute("y1",yy); line.setAttribute("y2",yy);
+    line.setAttribute("class","grid-line"); svg.appendChild(line);
+    const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x",pad.l-6); t.setAttribute("y",yy+4);
+    t.setAttribute("text-anchor","end"); t.setAttribute("class","axis-label");
+    t.textContent=fmt(maxV*p); svg.appendChild(t);
+  });
+
+  // area gradient
+  const defs=document.createElementNS("http://www.w3.org/2000/svg","defs");
+  const grad=document.createElementNS("http://www.w3.org/2000/svg","linearGradient");
+  grad.setAttribute("id","lg1"); grad.setAttribute("x1","0"); grad.setAttribute("y1","0"); grad.setAttribute("x2","0"); grad.setAttribute("y2","1");
+  grad.innerHTML=`<stop offset="0%" stop-color="#4f8ef7" stop-opacity="0.28"/>
+                  <stop offset="100%" stop-color="#4f8ef7" stop-opacity="0.01"/>`;
+  defs.appendChild(grad); svg.appendChild(defs);
+
+  const pts=data.map((d,i)=>`${x(i)},${y(d.v)}`).join(" ");
+  const areaPath=`M${x(0)},${y(0)} ${data.map((d,i)=>`L${x(i)},${y(d.v)}`).join(" ")} L${x(data.length-1)},${y(0)} Z`;
+  const area=document.createElementNS("http://www.w3.org/2000/svg","path");
+  area.setAttribute("d",areaPath); area.setAttribute("fill","url(#lg1)"); svg.appendChild(area);
+
+  // line
+  const polyline=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+  polyline.setAttribute("points",pts);
+  polyline.setAttribute("fill","none"); polyline.setAttribute("stroke","#4f8ef7");
+  polyline.setAttribute("stroke-width","2.5"); polyline.setAttribute("stroke-linejoin","round");
+  svg.appendChild(polyline);
+
+  // dots + labels
+  data.forEach((d,i)=>{
+    const circle=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    circle.setAttribute("cx",x(i)); circle.setAttribute("cy",y(d.v)); circle.setAttribute("r","4");
+    circle.setAttribute("fill","#4f8ef7"); circle.setAttribute("stroke","var(--card)"); circle.setAttribute("stroke-width","2");
+    circle.style.cursor="pointer";
+    circle.addEventListener("mouseenter",e=>showTT(e, d.m+" 2021", fmt2(d.v)));
+    circle.addEventListener("mouseleave",hideTT);
+    svg.appendChild(circle);
+
+    const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x",x(i)); t.setAttribute("y",H-8);
+    t.setAttribute("text-anchor","middle"); t.setAttribute("class","axis-label");
+    t.textContent=d.m; svg.appendChild(t);
+  });
+}
+
+/* ─── QUARTERLY BARS ──────────────────────── */
+function drawQtr(data) {
+  const svg=document.getElementById("qtr-svg");
+  svg.innerHTML="";
+  const W=260,H=220,pad={t:10,r:14,b:36,l:14};
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
+  const maxV=Math.max(...data.map(d=>d.v));
+  const bw=(iw/data.length)*0.55, gap=(iw/data.length);
+
+  const qColors=["#4f8ef7","#34c8b0","#f5a623","#a78bfa"];
+  data.forEach((d,i)=>{
+    const bh=(d.v/maxV)*ih;
+    const bx=pad.l+i*gap+(gap-bw)/2;
+    const by=pad.t+ih-bh;
+
+    const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    rect.setAttribute("x",bx); rect.setAttribute("y",by);
+    rect.setAttribute("width",bw); rect.setAttribute("height",bh);
+    rect.setAttribute("rx","5"); rect.setAttribute("fill",qColors[i]);
+    rect.setAttribute("opacity","0.85");
+    rect.style.cursor="pointer";
+    rect.addEventListener("mouseenter",e=>showTT(e,d.q,fmt2(d.v)));
+    rect.addEventListener("mouseleave",hideTT);
+    svg.appendChild(rect);
+
+    const vt=document.createElementNS("http://www.w3.org/2000/svg","text");
+    vt.setAttribute("x",bx+bw/2); vt.setAttribute("y",by-6);
+    vt.setAttribute("text-anchor","middle"); vt.setAttribute("class","axis-label");
+    vt.setAttribute("fill",qColors[i]); vt.setAttribute("font-size","9.5");
+    vt.textContent=fmt(d.v); svg.appendChild(vt);
+
+    const lt=document.createElementNS("http://www.w3.org/2000/svg","text");
+    lt.setAttribute("x",bx+bw/2); lt.setAttribute("y",H-6);
+    lt.setAttribute("text-anchor","middle"); lt.setAttribute("class","axis-label");
+    lt.textContent=d.q.replace(" 2021",""); svg.appendChild(lt);
+  });
+}
+
+/* ─── DONUT CHART ─────────────────────────── */
+function drawDonut(data) {
+  const svg=document.getElementById("donut-svg");
+  svg.innerHTML="";
+  const cx=110, cy=110, r=80, ir=52;
+  const total=data.reduce((a,d)=>a+d.v,0);
+  let angle=-Math.PI/2;
+
+  data.forEach((d,i)=>{
+    const slice=(d.v/total)*2*Math.PI;
+    const x1=cx+r*Math.cos(angle), y1=cy+r*Math.sin(angle);
+    const x2=cx+r*Math.cos(angle+slice), y2=cy+r*Math.sin(angle+slice);
+    const xi1=cx+ir*Math.cos(angle), yi1=cy+ir*Math.sin(angle);
+    const xi2=cx+ir*Math.cos(angle+slice), yi2=cy+ir*Math.sin(angle+slice);
+    const large=slice>Math.PI?1:0;
+    const path=`M${xi1},${yi1} L${x1},${y1} A${r},${r} 0 ${large} 1 ${x2},${y2} L${xi2},${yi2} A${ir},${ir} 0 ${large} 0 ${xi1},${yi1}`;
+    const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",path); p.setAttribute("fill",COLORS.region[i]);
+    p.setAttribute("opacity","0.9"); p.style.cursor="pointer";
+    p.addEventListener("mouseenter",e=>showTT(e,d.r+" region",fmt2(d.v)+" ("+Math.round(d.v/total*100)+"%)"));
+    p.addEventListener("mouseleave",hideTT);
+    svg.appendChild(p);
+    angle+=slice;
+  });
+
+  // center text
+  const ct=document.createElementNS("http://www.w3.org/2000/svg","text");
+  ct.setAttribute("x",cx); ct.setAttribute("y",cy-6); ct.setAttribute("text-anchor","middle");
+  ct.setAttribute("fill","#e8eaf0"); ct.setAttribute("font-size","13"); ct.setAttribute("font-weight","600");
+  ct.textContent="₹17.83L"; svg.appendChild(ct);
+  const cs=document.createElementNS("http://www.w3.org/2000/svg","text");
+  cs.setAttribute("x",cx); cs.setAttribute("y",cy+12); cs.setAttribute("text-anchor","middle");
+  cs.setAttribute("fill","#8891a8"); cs.setAttribute("font-size","9.5");
+  cs.textContent="Total Revenue"; svg.appendChild(cs);
+
+  // legend
+  const leg=document.getElementById("donut-legend");
+  leg.innerHTML="";
+  data.forEach((d,i)=>{
+    const pct=Math.round(d.v/total*100);
+    leg.innerHTML+=`<div style="display:flex;align-items:center;gap:7px;font-size:.78rem;">
+      <span style="width:8px;height:8px;border-radius:50%;background:${COLORS.region[i]};flex-shrink:0;"></span>
+      <span style="color:var(--txt2)">${d.r}</span>
+      <span style="margin-left:auto;font-family:'DM Mono',monospace;color:var(--txt);font-size:.74rem;">${pct}%</span>
+    </div>`;
+  });
+}
+
+/* ─── HORIZONTAL BAR ─────────────────────── */
+function drawHBar(svgId, data, keyField, valField, colors) {
+  const svg=document.getElementById(svgId);
+  svg.innerHTML="";
+  const W=320, H=220, pad={t:8,r:80,b:10,l:78};
+  const iw=W-pad.l-pad.r, ih=H-pad.t-pad.b;
+  const maxV=Math.max(...data.map(d=>d[valField]));
+  const bh=Math.min(24,(ih/data.length)*0.65);
+  const gap=ih/data.length;
+
+  data.forEach((d,i)=>{
+    const bw=(d[valField]/maxV)*iw;
+    const by=pad.t+i*gap+(gap-bh)/2;
+
+    const bg=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    bg.setAttribute("x",pad.l); bg.setAttribute("y",by);
+    bg.setAttribute("width",iw); bg.setAttribute("height",bh);
+    bg.setAttribute("rx","4"); bg.setAttribute("fill","rgba(255,255,255,0.04)");
+    svg.appendChild(bg);
+
+    const rect=document.createElementNS("http://www.w3.org/2000/svg","rect");
+    rect.setAttribute("x",pad.l); rect.setAttribute("y",by);
+    rect.setAttribute("width",bw); rect.setAttribute("height",bh);
+    rect.setAttribute("rx","4"); rect.setAttribute("fill",colors[i%colors.length]);
+    rect.setAttribute("opacity","0.88");
+    rect.style.cursor="pointer";
+    rect.addEventListener("mouseenter",e=>showTT(e,d[keyField],fmt2(d[valField])));
+    rect.addEventListener("mouseleave",hideTT);
+    svg.appendChild(rect);
+
+    const lt=document.createElementNS("http://www.w3.org/2000/svg","text");
+    lt.setAttribute("x",pad.l-6); lt.setAttribute("y",by+bh/2+4);
+    lt.setAttribute("text-anchor","end"); lt.setAttribute("class","axis-label");
+    lt.setAttribute("fill","#8891a8"); lt.setAttribute("font-size","10");
+    lt.textContent=d[keyField].length>10?d[keyField].slice(0,10):d[keyField]; svg.appendChild(lt);
+
+    const vt=document.createElementNS("http://www.w3.org/2000/svg","text");
+    vt.setAttribute("x",pad.l+bw+6); vt.setAttribute("y",by+bh/2+4);
+    vt.setAttribute("class","axis-label"); vt.setAttribute("font-size","9.5");
+    vt.setAttribute("fill",colors[i%colors.length]);
+    vt.textContent=fmt(d[valField]); svg.appendChild(vt);
+  });
+}
+
+/* ─── HEATMAP TABLE ───────────────────────── */
+function drawHeatmap(hdata) {
+  const tbl=document.getElementById("heat-table");
+  const {regions,products,values}=hdata;
+  const allVals=regions.flatMap(r=>products.map(p=>values[r][p]));
+  const maxV=Math.max(...allVals);
+
+  let html=`<thead><tr><th class="row-h">Region</th>`;
+  products.forEach(p=>{ html+=`<th>${p}</th>`; });
+  html+=`</tr></thead><tbody>`;
+
+  regions.forEach(r=>{
+    html+=`<tr><td class="region">${r}</td>`;
+    products.forEach(p=>{
+      const v=values[r][p];
+      const intensity=v/maxV;
+      const alpha=0.15+intensity*0.75;
+      const textColor=intensity>0.55?"#fff":"#8891a8";
+      html+=`<td style="background:rgba(79,142,247,${alpha.toFixed(2)});color:${textColor};" 
+               title="${r} · ${p}: ₹${v.toLocaleString('en-IN')}">${fmt(v)}</td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody>`;
+  tbl.innerHTML=html;
+}
+
+/* ─── FILTERS ─────────────────────────────── */
+let activeRegion="All", activeProduct="All";
+
+document.querySelectorAll(".filter-chip").forEach(chip=>{
+  chip.addEventListener("click",()=>{
+    const filter=chip.dataset.filter;
+    const val=chip.dataset.val;
+    document.querySelectorAll(`.filter-chip[data-filter="${filter}"]`).forEach(c=>c.classList.remove("active"));
+    chip.classList.add("active");
+    if(filter==="region") activeRegion=val;
+    if(filter==="product") activeProduct=val;
+    updateDashboard();
+  });
+});
+
+function filterData() {
+  // For this dataset we simulate filtering by recalculating from the heatmap
+  const hdata=ALL_DATA.heatmap;
+  let regions=hdata.regions;
+  let products=hdata.products;
+  if(activeRegion!=="All") regions=[activeRegion];
+  if(activeProduct!=="All") products=[activeProduct];
+
+  const totalRev=regions.reduce((s,r)=>s+products.reduce((ss,p)=>ss+hdata.values[r][p],0),0);
+  return {totalRev, regions, products};
+}
+
+function updateDashboard() {
+  const {totalRev}=filterData();
+
+  // Re-filter items
+  const hdata=ALL_DATA.heatmap;
+  let regions=activeRegion==="All"?hdata.regions:[activeRegion];
+  let prods=activeProduct==="All"?hdata.products:[activeProduct];
+
+  const itemFiltered=hdata.products
+    .filter(p=>prods.includes(p))
+    .map(p=>({i:p, v:regions.reduce((s,r)=>s+hdata.values[r][p],0)}))
+    .sort((a,b)=>b.v-a.v);
+
+  const regionFiltered=hdata.regions.map(r=>({
+    r, v:prods.reduce((s,p)=>s+hdata.values[r][p],0)
+  })).filter(d=>activeRegion==="All"||d.r===activeRegion).sort((a,b)=>b.v-a.v);
+
+  document.getElementById("kpi-rev").textContent=fmt(totalRev);
+
+  drawLine(ALL_DATA.monthly);
+  drawQtr(ALL_DATA.quarterly);
+  drawDonut(regionFiltered.length>1?regionFiltered:[{r:activeRegion, v:totalRev}]);
+  drawHBar("item-svg",itemFiltered,"i","v",COLORS.items);
+  drawHBar("sal-svg",ALL_DATA.salesman.filter(d=>true),"s","v",COLORS.salesman);
+}
+
+/* ─── INIT ───────────────────────────────── */
+drawLine(ALL_DATA.monthly);
+drawQtr(ALL_DATA.quarterly);
+drawDonut(ALL_DATA.region);
+drawHBar("item-svg", ALL_DATA.items, "i", "v", COLORS.items);
+drawHBar("sal-svg",  ALL_DATA.salesman, "s", "v", COLORS.salesman);
+drawHeatmap(ALL_DATA.heatmap);
+</script>
+</body>
+</html>
